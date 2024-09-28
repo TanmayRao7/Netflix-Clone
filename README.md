@@ -17,6 +17,9 @@ This project demonstrates the implementation of DevSecOps practices using a Netf
 
 This project utilizes a Jenkins pipeline to automate the build, test, and deployment processes. The pipeline integrates with security and monitoring tools to ensure a robust and secure deployment workflow.
 
+![image](https://github.com/user-attachments/assets/c2e10c0e-2232-4be8-b2f2-d5cb0684d26b)
+
+
 ### Key Pipeline Stages:
 1. **Build & Test**: Automated builds using Jenkins with unit testing.
 2. **Code Quality & Security Analysis**: SonarQube is integrated to check code quality, detect bugs, and identify security vulnerabilities.
@@ -29,23 +32,46 @@ This project utilizes a Jenkins pipeline to automate the build, test, and deploy
 ### SonarQube Analysis
 SonarQube is integrated into the Jenkins pipeline to provide continuous inspection of code quality and security. It checks for code bugs, code smells, and security vulnerabilities.
 
+![image](https://github.com/user-attachments/assets/7de7046f-3629-4f30-b4d5-9dce6067f90f)
+
+
 ### Trivy File System & Image Scans
 Trivy is used to perform filesystem scans to detect security issues in the project's dependencies. Additionally, image scanning ensures that Docker images are free from vulnerabilities before deployment.
 
+![image](https://github.com/user-attachments/assets/7e8cc6db-157b-45a2-b9da-27cb3901d761)
+
 ### OWASP Dependency Check
 OWASP Dependency Check is used to analyze the project dependencies for known vulnerabilities. It integrates into the pipeline to halt deployment if critical vulnerabilities are found.
+
+![image](https://github.com/user-attachments/assets/fd64d1d9-1a7d-4ecd-b272-6cba172e63f3)
+
 
 ## Monitoring & Visualization
 
 ### Prometheus
 Prometheus is configured to monitor the application and the underlying infrastructure. It collects metrics and triggers alerts based on predefined thresholds.
 
+![image](https://github.com/user-attachments/assets/ef2f7f0d-72df-468d-aa4f-f54f8252d608)
+
+
 ### Grafana Dashboards
 Grafana is used for visualizing data collected by Prometheus. The dashboards provide insights into the application's performance, resource usage, and any security events detected.
 
+Cluster Monitoring
+
+![image](https://github.com/user-attachments/assets/54a496ae-6daa-4d1a-86cd-e47a9cc66a3a)
+
+Jenkins Monitoring
+
+![image](https://github.com/user-attachments/assets/0872e0a7-130b-43f2-afd4-8dc859153088)
+
+
 ## Application Demo
 
-A fully functional demo of the Netflix Clone application is included, showcasing the final deployment and all integrated security and monitoring tools.
+A fully functional demo of the Netflix Clone application is included, showcasing the final deployment and all integrated security and monitoring tools. (Used Kubectl port forward command to expose service of minikube)
+
+![image](https://github.com/user-attachments/assets/1727b837-c3f6-4f31-81c9-3f03f2892130)
+
 
 ---
 ### Pipeline Code:
@@ -90,7 +116,7 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build --build-arg TMDB_V3_API_KEY=85ff9332bfc5bf4c728e5921960b2e54 -t tanmayrao7/video-apps .'
+                sh 'docker build --build-arg TMDB_V3_API_KEY=<API_KEY> -t tanmayrao7/video-apps .'
             }
         }
         stage('Docker Push') {
