@@ -48,4 +48,76 @@ Grafana is used for visualizing data collected by Prometheus. The dashboards pro
 A fully functional demo of the Netflix Clone application is included, showcasing the final deployment and all integrated security and monitoring tools.
 
 ---
+### Pipeline Code:
+``` 
+
+pipeline {
+    agent any
+    tools{
+            jdk 'java_jdk'
+            nodejs 'node16'
+        }
+        environment {
+            SCANNER_HOME=tool 'sonar-scanner'
+        }
+    stages {
+        stage('Clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Git Checkout ') {
+            steps {
+                git branch: 'main', url: 'https://github.com/TanmayRao7/Netflix-Clone.git'
+            }
+        }
+        stage('Sonar Scanner') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh ' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=netflix -Dsonar.projectKey=netflix'
+                }
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Trivy FS SCAN') {
+            steps {
+                sh 'trivy fs . > fs-scan.txt'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build --build-arg TMDB_V3_API_KEY=85ff9332bfc5bf4c728e5921960b2e54 -t tanmayrao7/video-apps .'
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh 'docker push tanmayrao7/video-apps:latest'
+            }
+        }
+        stage('Trivy Image Scan') {
+            steps {
+                sh 'trivy image tanmayrao7/video-apps > image_scan.txt'
+            }
+        }
+        stage('OWASP FS SCAN') {
+            steps {
+                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'checker'
+                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+        stage('K8s Deploy') {
+            steps {
+                sh 'cd Kubernetes && kubectl apply -f deployment.yml'
+                sh 'cd Kubernetes && kubectl apply -f service.yml'
+                sh 'kubectl get deployments'
+            }
+        }
+    }
+}
+
+
 
